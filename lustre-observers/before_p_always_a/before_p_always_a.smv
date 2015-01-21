@@ -1,0 +1,77 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: before_p_always_a
+-- Version 1.1 Build Date: Wed Jan  9 11:37:50 2013
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: before_p_always_a_node implements node: before_p_always_a_node
+--
+
+MODULE before_p_always_a_node(p,
+         a)
+
+   VAR 
+      state : -1 ..3 ; 
+
+   DEFINE 
+      holds := (state != 3) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            p : 1; 
+            a : 0; 
+            TRUE : 2; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               next(p) : 1; 
+               next(a) : 0; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 1) : 1; 
+            (state = 2) : 
+            (case 
+               (! next(p)) : 2; 
+               TRUE : 3; 
+            esac) ; 
+            (state = 3) : 3; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE before_p_always_a_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: before_p_always_a
+--
+
+MODULE main
+   VAR 
+      before_p_always_a : before_p_always_a_node(p,
+               a) ; 
+      p : boolean ; 
+      a : boolean ; 
+
+   DEFINE 
+      holds := before_p_always_a.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: before_p_always_a
+-----------------------------------------------------------------------
+
+LTLSPEC (F p -> a U p) <->  G holds

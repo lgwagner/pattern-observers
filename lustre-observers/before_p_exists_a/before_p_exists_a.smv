@@ -1,0 +1,72 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: before_p_exists_a
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: before_p_exists_a_node implements node: before_p_exists_a_node
+--
+
+MODULE before_p_exists_a_node(p,
+         a)
+
+   VAR 
+      state : -1 ..2 ; 
+
+   DEFINE 
+      holds := (state != 2) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            p : 2; 
+            (! a) : 0; 
+            TRUE : 1; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               next(p) : 2; 
+               (! next(a)) : 0; 
+               TRUE : 1; 
+            esac) ; 
+            (state = 1) : 1; 
+            (state = 2) : 2; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE before_p_exists_a_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: before_p_exists_a
+--
+
+MODULE main
+   VAR 
+      before_p_exists_a : before_p_exists_a_node(p,
+               a) ; 
+      p : boolean ; 
+      a : boolean ; 
+
+   DEFINE 
+      holds := before_p_exists_a.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: before_p_exists_a
+-----------------------------------------------------------------------
+--LTLSPEC (!p W (a & !p))
+LTLSPEC (!p U ((a & !p) | G !p)) <-> G holds

@@ -1,0 +1,104 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: after_p_until_q_exists_a
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: after_p_until_q_exists_a_node implements node: after_p_until_q_exists_a_node
+--
+
+MODULE after_p_until_q_exists_a_node(p,
+         q,
+         a)
+
+   VAR 
+      state : -1 ..3 ; 
+
+   DEFINE 
+      holds := ((state = 0) | 
+         (state = 2)) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            (! p) : 0; 
+            (p & 
+            q) : 0; 
+            ((p & 
+            (! a)) & 
+            (! q)) : 1; 
+            ((p & 
+            a) & 
+            (! q)) : 2; 
+            TRUE : -1 ; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               (! next(p)) : 0; 
+               (next(p) & 
+               next(q)) : 0; 
+               ((next(p) & 
+               (! next(a))) & 
+               (! next(q))) : 1; 
+               ((next(p) & 
+               next(a)) & 
+               (! next(q))) : 2; 
+               TRUE : -1 ; 
+            esac) ; 
+            (state = 1) : 
+            (case 
+               next(q) : 3; 
+               next(a) : 2; 
+               TRUE : 1; 
+            esac) ; 
+            (state = 2) : 
+            (case 
+               next(q) : 0; 
+               next(p) : 
+               (case 
+                  next(a) : 2; 
+                  TRUE : 1; 
+               esac) ; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 3) : 3; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE after_p_until_q_exists_a_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: after_p_until_q_exists_a
+--
+
+MODULE main
+   VAR 
+      after_p_until_q_exists_a : after_p_until_q_exists_a_node(p,
+               q,
+               a) ; 
+      p : boolean ; 
+      q : boolean ; 
+      a : boolean ; 
+
+   DEFINE 
+      holds := after_p_until_q_exists_a.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: after_p_until_q_exists_a
+-----------------------------------------------------------------------
+LTLSPEC G((p & !q) -> (!q U (a & !q))) <-> G F holds

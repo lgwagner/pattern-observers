@@ -1,0 +1,87 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: while_p_a_precedes_b
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: while_p_a_precedes_b_node implements node: while_p_a_precedes_b_node
+--
+
+MODULE while_p_a_precedes_b_node(p,
+         a,
+         b)
+
+   VAR 
+      state : -1 ..2 ; 
+
+   DEFINE 
+      holds := (state != 2) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            (! p) : 0; 
+            a : 0; 
+            (! b) : 1; 
+            TRUE : 2; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               (! next(p)) : 0; 
+               next(a) : 0; 
+               (! next(b)) : 1; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 1) : 
+            (case 
+               (! next(p)) : 0; 
+               next(a) : 0; 
+               (next(p) & 
+               (! next(a))) : 
+               (case 
+                  (! next(b)) : 1; 
+                  TRUE : 2; 
+               esac) ; 
+               TRUE : -1 ; 
+            esac) ; 
+            (state = 2) : 2; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE while_p_a_precedes_b_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: while_p_a_precedes_b
+--
+
+MODULE main
+   VAR 
+      while_p_a_precedes_b : while_p_a_precedes_b_node(p,
+               a,
+               b) ; 
+      p : boolean ; 
+      a : boolean ; 
+      b : boolean ; 
+
+   DEFINE 
+      holds := while_p_a_precedes_b.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: while_p_a_precedes_b
+-----------------------------------------------------------------------
+LTLSPEC G(p -> (!b U ((a | !p) | G !b))) <-> G holds

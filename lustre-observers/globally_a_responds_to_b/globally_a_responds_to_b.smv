@@ -1,0 +1,74 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: globally_a_responds_to_b
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: globally_a_responds_to_b_node implements node: globally_a_responds_to_b_node
+--
+
+MODULE globally_a_responds_to_b_node(a,
+         b)
+
+   VAR 
+      state : -1 ..1 ; 
+
+   DEFINE 
+      holds := (state = 0) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            (! b) : 0; 
+            a : 0; 
+            TRUE : 1; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               (! next(b)) : 0; 
+               next(a) : 0; 
+               TRUE : 1; 
+            esac) ; 
+            (state = 1) : 
+            (case 
+               (! next(a)) : 1; 
+               TRUE : 0; 
+            esac) ; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE globally_a_responds_to_b_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: globally_a_responds_to_b
+--
+
+MODULE main
+   VAR 
+      globally_a_responds_to_b : globally_a_responds_to_b_node(a,
+               b) ; 
+      a : boolean ; 
+      b : boolean ; 
+
+   DEFINE 
+      holds := globally_a_responds_to_b.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: globally_a_responds_to_b
+-----------------------------------------------------------------------
+LTLSPEC G(b -> F a) <-> G F holds

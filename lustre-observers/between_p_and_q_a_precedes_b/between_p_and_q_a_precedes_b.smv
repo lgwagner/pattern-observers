@@ -1,0 +1,113 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: between_p_and_q_a_precedes_b
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: between_p_and_q_a_precedes_b_node implements node: between_p_and_q_a_precedes_b_node
+--
+
+MODULE between_p_and_q_a_precedes_b_node(p,
+         q,
+         a,
+         b)
+
+   VAR 
+      state : -1 ..3 ; 
+
+   DEFINE 
+      holds := (state != 3) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            (! p) : 0; 
+            (p & 
+            q) : 0; 
+            (p & 
+            a) : 0; 
+            ((p & 
+            (! q)) & 
+            (! a)) : 
+            (case 
+               (! b) : 1; 
+               TRUE : 2; 
+            esac) ; 
+            TRUE : -1 ; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               (! next(p)) : 0; 
+               (next(p) & 
+               next(q)) : 0; 
+               (next(p) & 
+               next(a)) : 0; 
+               ((next(p) & 
+               (! next(q))) & 
+               (! next(a))) : 
+               (case 
+                  (! next(b)) : 1; 
+                  TRUE : 2; 
+               esac) ; 
+               TRUE : -1 ; 
+            esac) ; 
+            (state = 1) : 
+            (case 
+               next(q) : 0; 
+               next(a) : 0; 
+               ((! next(q)) & 
+               (! next(a))) : 
+               (case 
+                  (! next(b)) : 1; 
+                  TRUE : 2; 
+               esac) ; 
+               TRUE : -1 ; 
+            esac) ; 
+            (state = 2) : 
+            (case 
+               next(q) : 3; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 3) : 3; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE between_p_and_q_a_precedes_b_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: between_p_and_q_a_precedes_b
+--
+
+MODULE main
+   VAR 
+      between_p_and_q_a_precedes_b : between_p_and_q_a_precedes_b_node(p,
+               q,
+               a,
+               b) ; 
+      p : boolean ; 
+      q : boolean ; 
+      a : boolean ; 
+      b : boolean ; 
+
+   DEFINE 
+      holds := between_p_and_q_a_precedes_b.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: between_p_and_q_a_precedes_b
+-----------------------------------------------------------------------
+LTLSPEC G((p & !q & (F q)) -> (!b U (a | q))) -> G holds

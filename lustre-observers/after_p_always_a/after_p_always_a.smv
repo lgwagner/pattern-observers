@@ -1,0 +1,75 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: after_p_always_a
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: after_p_always_a_node implements node: after_p_always_a_node
+--
+
+MODULE after_p_always_a_node(p,
+         a)
+
+   VAR 
+      state : -1 ..2 ; 
+
+   DEFINE 
+      holds := (state != 2) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            (! p) : 0; 
+            a : 1; 
+            TRUE : 2; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               (! next(p)) : 0; 
+               next(a) : 1; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 1) : 
+            (case 
+               next(a) : 1; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 2) : 2; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE after_p_always_a_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: after_p_always_a
+--
+
+MODULE main
+   VAR 
+      after_p_always_a : after_p_always_a_node(p,
+               a) ; 
+      p : boolean ; 
+      a : boolean ; 
+
+   DEFINE 
+      holds := after_p_always_a.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: after_p_always_a
+-----------------------------------------------------------------------
+LTLSPEC G(p -> G(a)) <-> G holds

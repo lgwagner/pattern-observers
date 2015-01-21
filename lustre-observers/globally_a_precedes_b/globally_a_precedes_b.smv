@@ -1,0 +1,71 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: globally_a_precedes_b
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: globally_a_precedes_b_node implements node: globally_a_precedes_b_node
+--
+
+MODULE globally_a_precedes_b_node(a,
+         b)
+
+   VAR 
+      state : -1 ..2 ; 
+
+   DEFINE 
+      holds := (state != 2) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            a : 1; 
+            (! b) : 0; 
+            TRUE : 2; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               next(a) : 1; 
+               (! next(b)) : 0; 
+               TRUE : 2; 
+            esac) ; 
+            (state = 1) : 1; 
+            (state = 2) : 2; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE globally_a_precedes_b_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: globally_a_precedes_b
+--
+
+MODULE main
+   VAR 
+      globally_a_precedes_b : globally_a_precedes_b_node(a,
+               b) ; 
+      a : boolean ; 
+      b : boolean ; 
+
+   DEFINE 
+      holds := globally_a_precedes_b.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: globally_a_precedes_b
+-----------------------------------------------------------------------
+LTLSPEC (!b U (a | G !b)) <-> G holds

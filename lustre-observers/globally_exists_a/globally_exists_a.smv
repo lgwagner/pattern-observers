@@ -1,0 +1,65 @@
+-----------------------------------------------------------------------
+-- Lustre2smv translation of specification: globally_exists_a
+-- Version 1.1 Build Date: Tue Nov  6 10:01:12 2012
+-- Written by Mike Whalen, Anjali Joshi, Dan O'Brien, Ajitha Rajan, and
+-- Lucas Wagner 
+-- Copyright 2004 Rockwell-Collins Inc and the University of Minnesota.
+-- All Rights Reserved
+-----------------------------------------------------------------------
+
+
+--
+--module: globally_exists_a_node implements node: globally_exists_a_node
+--
+
+MODULE globally_exists_a_node(a)
+
+   VAR 
+      state : -1 ..1 ; 
+
+   DEFINE 
+      holds := (state = 1) ; 
+
+   ASSIGN 
+      init(state) := 
+         (case 
+            (! a) : 0; 
+            TRUE : 1; 
+         esac)  ; 
+      
+      next(state) := 
+         (case 
+            (state = 0) : 
+            (case 
+               (! next(a)) : 0; 
+               TRUE : 1; 
+            esac) ; 
+            (state = 1) : 1; 
+            TRUE : -1 ; 
+         esac)  ; 
+
+-- end MODULE globally_exists_a_node
+
+
+
+
+--
+--module: main is the main module for specification with root node: globally_exists_a
+--
+
+MODULE main
+   VAR 
+      globally_exists_a : globally_exists_a_node(a) ; 
+      a : boolean ; 
+
+   DEFINE 
+      holds := globally_exists_a.holds ; 
+
+-- end MODULE main
+
+
+
+-----------------------------------------------------------------------
+-- end of translation of specification: globally_exists_a
+-----------------------------------------------------------------------
+LTLSPEC F a <-> G F holds
