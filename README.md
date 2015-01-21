@@ -35,6 +35,6 @@ In this case we bound the time in which we expect the satisfying event to occur.
 
   `global :: a responds to b`
       becomes
-  `global :: a respond to b within N`
+  `global :: a responds to b within N`
   
 Where N represents the number of computation steps we expect b to occur within.
