@@ -42,9 +42,6 @@ let
    p5 = not S(a,b) = T(not a, not b);
    p6 = not T(a,b) = S(not a, not b);
    
-   
-   
-   
    --%PROPERTY p1;
    --%PROPERTY p2;
    --%PROPERTY p3;
