@@ -1,0 +1,55 @@
+node H(a : bool) returns (holds : bool);
+let
+   holds = a and Z(holds);
+tel;
+
+node O(a : bool) returns (holds : bool);
+let
+   holds = a or Y(holds);
+tel;
+
+node Y(a : bool) returns (holds : bool);
+let
+   holds = (false -> pre a);
+tel;
+
+node Z(a : bool) returns (holds : bool);
+let
+   holds = (true -> pre a);
+tel;
+
+node S(a : bool; b : bool) returns (holds : bool);
+let
+   holds = b or (a and Y(holds));
+tel;
+
+node T(a : bool; b : bool) returns (holds : bool);
+let
+   holds = b and (a or Z(holds));
+tel;
+
+node first(a : bool) returns (holds : bool);
+let
+   holds = a and Z(H(not a));
+tel;
+
+node properties(a : bool; b : bool) returns (p1,p2,p3,p4,p5,p6 : bool);
+let
+   p1 = not Y(a) = Z(not a);
+   p2 = not Z(a) = Y(not a);
+   p3 = not H(a) = O(not a);
+   p4 = not O(a) = H(not a);
+   p5 = not S(a,b) = T(not a, not b);
+   p6 = not T(a,b) = S(not a, not b);
+   
+   
+   
+   
+   --%PROPERTY p1;
+   --%PROPERTY p2;
+   --%PROPERTY p3;
+   --%PROPERTY p4;
+   --%PROPERTY p5;
+   --%PROPERTY p6;
+tel;
+
