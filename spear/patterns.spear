@@ -1,9 +1,9 @@
 Definitions patterns
 
 Types:
-	subrange_n1_1:  {i : int | -1 <= i and i <= 1}
-	subrange_n1_2 : {i : int | -1 <= i and i <= 2}
-	subrange_n1_3 : {i : int | -1 <= i and i <= 3}
+	subrange_n1_1:  {i : int | UNREACHABLE <= i and i <= 1}
+	subrange_n1_2 : {i : int | UNREACHABLE <= i and i <= 2}
+	subrange_n1_3 : {i : int | UNREACHABLE <= i and i <= 3}
 
 Constants:
 	UNREACHABLE : int = -1
